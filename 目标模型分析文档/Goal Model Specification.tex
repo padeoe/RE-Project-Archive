@@ -94,16 +94,16 @@
    \item 用户不知道如何锻炼。不了解健身知识。
    \item 用户体测指标不合格。
    \item 希望长期锻炼却缺乏定期提醒，无法坚持。
-   \item 用户缺乏饮食相关知识。
+   \item 用户缺乏饮食相关知识，饮食不合理。
 \end{enumerate}
 \subsection{发现业务需求}
 根据问题，发现了他们各自对应的业务需求：
 \begin{description}
    \item[BR1] 使用六个月后，用户身体素质，健康状况得到提高。
-   \item[BR2] 系统每周推送的健身建议不少于5条。
+   \item[BR2] 系统每周推送的健身教练的健身建议不少于5条。
    \item[BR3] 在使用本软件后的一个学期内，身体素质达到体质测试及格水平。
-   \item[BR4] 用户能够养成锻炼的习惯。
-   \item[BR5] 系统每周根据用户情况推送饮食建议不少于5条。
+   \item[BR4] 使用一学期后，用户能够养成锻炼的习惯。
+   \item[BR5] 系统每周根据用户情况推送医生的饮食建议不少于5条。
 \end{description}
 
 \subsection{业务需求抽取定义为目标}
@@ -113,12 +113,111 @@
 
 \section{目标精化}
 \subsection{获取对高层次目标的描述}
-
+\begin{description}
+   \item[G1] 使用六个月后，用户身体素质，健康状况得到提高
+   \begin{description}
+      \item[Goal] Achieve[ KeepPhysicalHealth ]
+      \item[类型] SatisfactionGoal
+      \item[非正式定义] 使用六个月后，用户身体素质，健康状况得到提高
+      \item[关注] PhysicalHealth
+      \item[正式定义] $\forall c:PhysicalHealth\\ KeepGood(c)\\ =>\diamond c.time<=1Term$
+   \end{description}
+   \item[G2] 系统每周推送健身教练的健身建议不少于5条。
+   \begin{description}
+      \item[Goal] Achieve[ FitnessGuide ]
+      \item[类型] SatisfactionGoal
+      \item[非正式定义] 系统每周推送健身教练的健身建议不少于5条。
+      \item[关注] FitnessGuide
+      \item[正式定义] $\forall c:Guide\\ time=1week\\ =>\diamond c>=5$
+   \end{description}
+   \item[G3] 在使用本软件后的一个学期内，身体素质达到体质测试及格水平。
+   \begin{description}
+      \item[Goal] Achieve[ PassTest ]
+      \item[类型] SatisfactionGoal
+      \item[非正式定义] 在使用本软件后的一个学期内，身体素质达到体质测试及格水平。
+      \item[关注] TestGrade
+      \item[正式定义] $\forall c:TestGrade\\ =>\diamond Pass(c),c.time<=1Term$
+   \end{description}
+   \item[G4] 使用一学期后，用户能够养成锻炼的习惯。
+   \begin{description}
+      \item[Goal] Achieve[ MakeFitnessHabbit ]
+      \item[类型] SatisfactionGoal
+      \item[非正式定义] 使用一学期后，用户能够养成锻炼的习惯。
+      \item[关注] FitnessHabbit
+      \item[正式定义] $\forall c:FitnessHabbit\\ time=1week\\ =>\diamond Make(c)$
+   \end{description}
+   \item[G5] 系统每周根据用户情况推送医生的饮食建议不少于5条。
+   \begin{description}
+   \item[Goal] Achieve[ GetDietGuide ]
+   \item[类型] SatisfactionGoal
+   \item[非正式定义] 系统每周根据用户情况推送医生的饮食建议不少于5条。
+   \item[关注] DietGuide
+   \item[正式定义] $\forall c:DietGuide\\ time=1week\\ =>\diamond c>=5$
+   \end{description}
+\end{description}
 \subsection{从高层次目标描述中发现AND精化关系}
+使用一学期后，用户能够养成锻炼的习惯。（G4）需要由“系统每周推送健身教练的健身建议不少于5条（G2）”和“系统能够每日按照用户安排提醒用户进行锻炼”以及“系统根据用户身体状况以及日程安排调整锻炼计划”互补完成，因此需要增加目标G6"系统能够每日按照用户安排提醒用户进行锻炼"以及G7“系统根据用户身体状况以及日程安排调整锻炼计划”,G4与{G2,G6，G7}之间为AND精化关系。
+\begin{description}
+\item[G6] 系统能够每日按照用户安排提醒用户进行锻炼
+\begin{description}
+   \item[Goal] Achieve[ ExerciseScheduleNoticed ]
+   \item[类型] SatisfactionGoal
+   \item[非正式定义] 使用一学期后，用户能够养成锻炼的习惯。
+   \item[关注] ExerciseSchedule，User
+   \item[正式定义] $\forall c:ExerciseSchedule u：User\\ ExerciseSchedule=time.now\\ =>\diamond Notify(u)$
+\end{description}
+\item[G7] 系统根据用户身体状况以及日程安排调整锻炼计划
+\begin{description}
+   \item[Goal] Achieve[ ExerciseScheduleArranged ]
+   \item[类型] SatisfactionGoal
+   \item[非正式定义] 系统根据用户身体状况以及日程安排调整锻炼计划
+   \item[关注] UserState,UserSchedule
+   \item[正式定义] $\forall c:UserState u:UserSchedule\\ =>\diamond ArrangeExerciseScheduleBy(c,u)$
+\end{description}
+\end{description}
+
+“系统每周推送健身教练的健身建议不少于5条”（G2）需要由“健身教练将健身建议录入系统”（G11）以及“用户提供身体健康状况以及体测指标”（G12）共同完成。G2和{G11,G12}之间是AND净化关系。
+\begin{description}
+\item[G11] 健身教练将健身建议录入系统
+\begin{description}
+   \item[Goal] Achieve[ ExerciseGuideInputed ]
+   \item[类型] SatisfactionGoal
+   \item[非正式定义] 健身教练将健身建议录入系统
+   \item[关注] ExerciseGuide
+   \item[正式定义] $\forall c:ExerciseGuide \\ =>\diamond Input(c)$
+\end{description}
+\item[G12] 用户提供身体健康状况以及体测指标
+\begin{description}
+   \item[Goal] Maintain[ HealthDataInputed ]
+   \item[类型] SatisfactionGoal
+   \item[非正式定义] 用户提供身体健康状况以及体测指标
+   \item[关注] HealthData
+   \item[正式定义] $\forall c:HealthData \\ =>\diamond Input(c)$
+\end{description}
+\end{description}
+
+“系统每周根据用户情况推送饮食建议不少于5条。”（G5）需要由“医生将饮食建议录入系统”（G13）以及“用户提供身体健康状况以及体测指标”（G12）共同完成。G5和{G13,G12}之间是AND净化关系。
+\begin{description}
+\item[G13] 医生将饮食建议录入系统
+\begin{description}
+   \item[Goal] Achieve[ DietGuideInputed ]
+   \item[类型] SatisfactionGoal
+   \item[非正式定义] 医生将饮食建议录入系统
+   \item[关注] DietGuide
+   \item[正式定义] $\forall c:DietGuide \\ =>\diamond Input(c)$
+\end{description}
+\end{description}
+
 \subsection{从高层次目标描述中发现OR精化关系}
+没有发现OR精化关系
 \subsection{考虑阻碍目标实现的情况}
+由于“健身教练将健身建议录入系统”(G11)中教练缺乏动力达成该目标，因此该目标会阻碍“系统每周推送健身教练的健身建议不少于5条”（G2）的完成。
+医生将饮食建议录入系统(G13)中医生缺乏动力达成该目标，因此该目标会阻碍“系统每周根据用户情况推送饮食建议不少于5条”（G5）的完成。
 \subsection{发现目标冲突关系}
+本系统中未发现相互冲突的目标
 \subsection{完善层次结构}
+
+\includegraphics[scale=0.90]{goalModel.pdf}
 
 \section{目标实现}
 \subsection{将底层目标分配给主体}
